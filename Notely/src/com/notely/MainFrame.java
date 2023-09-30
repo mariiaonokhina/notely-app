@@ -1,17 +1,15 @@
 package com.notely;
 
-import org.w3c.dom.Text;
-
+import java.io.*;
+import java.net.URL;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class MainFrame extends JFrame {
     private MainPanel mainPanel;
     private NoteBar noteBar;
-    private JButton addNewBtn;
 
+    private URL resourceUrl = MainFrame.class.getResource("/");
     /**
      Constructor for the MainFrame of Notely app setting all necessary settings, such as window title, size, layout, etc.
      */
@@ -23,11 +21,16 @@ public class MainFrame extends JFrame {
 
         setLayout(new BorderLayout());
         mainPanel = new MainPanel();
-        noteBar = new NoteBar();
-        addNewBtn = new JButton("Add New");
+
+        if (resourceUrl != null) {
+            File notesFolder = new File(resourceUrl.getFile(), "notes");
+            String filePath = notesFolder.getAbsolutePath();
+            noteBar = new NoteBar(filePath);
+        }   else {
+            System.exit(1);
+        }
 
         add(noteBar, BorderLayout.LINE_START);
         add(mainPanel, BorderLayout.CENTER);
     }
-
 }
