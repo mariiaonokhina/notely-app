@@ -1,6 +1,8 @@
 package com.notely;
 
-public class Note {
+import javax.swing.*;
+
+public class Note extends JButton {
     private String fileName;
     private String content;
 
@@ -19,5 +21,13 @@ public class Note {
 
     public String getContent() {
         return content;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

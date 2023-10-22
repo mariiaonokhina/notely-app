@@ -1,7 +1,6 @@
 package com.notely;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.io.*;
 import javax.swing.*;
 import java.util.*;
@@ -9,9 +8,14 @@ import java.util.*;
 public class NoteBar extends JPanel {
     private JLabel myNotesLabel;
     private JButton addNewNoteBtn;
-    private File files;
+    private static File files;
     private File[] fileArr;
     private static LinkedList<Note> notes = new LinkedList<>();
+
+    private static int noteNum = 1;
+
+    private NewNoteListener newNoteListener;
+    private FileOpenedListener fileOpenedListener;
 
     /**
      * Toolbar holds all notes created by the user.
@@ -21,6 +25,7 @@ public class NoteBar extends JPanel {
         addNewNoteBtn = new JButton("+ New Note");
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(Color.lightGray);
 
         add(myNotesLabel);
         add(addNewNoteBtn);
@@ -34,7 +39,9 @@ public class NoteBar extends JPanel {
 
             // Populate all notes
             for(Note note: notes) {
-                add(new JLabel(note.getFileName()));
+                JButton btn = new JButton(note.getFileName());
+                add(btn);
+                btn.addActionListener((e -> fileOpenedListener.fileOpened(note.getFileName())));
             }
         }
         else {
@@ -42,22 +49,7 @@ public class NoteBar extends JPanel {
         }
 
         // Add new file
-        addNewNoteBtn.addActionListener(e -> {
-            try {
-                String fileName = "newFile.txt";
-                File newFile = new File(files.toString() + "/" + fileName);
-
-                if (newFile.createNewFile()) {
-                    this.add(new JLabel(fileName));
-                    notes.addFirst(new Note(fileName));
-                } else {
-                    System.out.println("File already exists.");
-                }
-            } catch (IOException err) {
-                System.out.println("An error occurred.");
-                err.printStackTrace();
-            }
-        });
+        addNewNoteBtn.addActionListener(e -> addNewNote());
     }
 
     /**
@@ -89,4 +81,46 @@ public class NoteBar extends JPanel {
         notes.addFirst(new Note(currLabel.toString()));
         populateNotes(fileArr, num + 1, level);
     }
+
+    /**
+     * Adds new note to the note bar.
+     */
+    public boolean addNewNote() {
+        try {
+            File newFile = new File(files.toString() + "/" + "text" + noteNum + ".txt");
+            if (newFile.createNewFile()) {
+                notes.addFirst(new Note("text" + noteNum + ".txt"));
+                add(new JLabel("text" + noteNum + ".txt"));
+
+                if (newNoteListener != null) {
+                    newNoteListener.newNoteCreated(true);
+                }
+
+                revalidate();
+                repaint();
+
+                noteNum++;
+
+                return true;
+            } else {
+                System.out.println("File already exists.");
+
+                if (newNoteListener != null) {
+                    newNoteListener.newNoteCreated(false);
+                }
+
+                return false;
+            }
+        } catch (IOException err) {
+            System.out.println("An error occurred.");
+            err.printStackTrace();
+            return false;
+        }
+    }
+
+    public void setNewNoteListener(NewNoteListener listener) {
+        this.newNoteListener = listener;
+    }
+
+    public void setFileOpenedListener(FileOpenedListener listener) { this.fileOpenedListener = listener; }
 }

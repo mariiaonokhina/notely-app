@@ -15,7 +15,7 @@ public class Notely {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Set up the window
-            new MainFrame("Notely", 500, 500);
+            new MainFrame("Notely", 600, 600);
         });
     }
 }
