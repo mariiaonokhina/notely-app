@@ -13,6 +13,7 @@ public class MainFrame extends JFrame {
 
     private CreateFilePanel createFilePanel;
     private NoteArea noteArea;
+    private JScrollPane areaScrollPane;
 
     private boolean newNoteWasCreated = false;
     private String fileOpened = "";
@@ -69,10 +70,14 @@ public class MainFrame extends JFrame {
 
                 noteArea = new NoteArea(noteContent, 100, 100);
 
+                // Add a scrollbar to the note
+                areaScrollPane = new JScrollPane(noteArea);
+
                 if (!Objects.equals(fileOpened, "")) {
                     getContentPane().removeAll();
                     add(noteBar, BorderLayout.LINE_START);
-                    add(noteArea, BorderLayout.CENTER);
+                    noteArea.setText(noteContent.toString());
+                    add(areaScrollPane, BorderLayout.CENTER);
                     revalidate();
                     repaint();
                 }
@@ -97,9 +102,7 @@ public class MainFrame extends JFrame {
                     try{
                         FileWriter fw = new FileWriter(openedNote,false);
                         BufferedWriter bw = new BufferedWriter(fw);
-                        bw.newLine();
                         bw.write(noteArea.getNoteContent());
-                        bw.flush();
                         bw.close();
                     }
                     catch(Exception err){
